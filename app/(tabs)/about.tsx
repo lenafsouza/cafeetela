@@ -4,7 +4,7 @@ import {Link} from 'expo-router';
 export default function About() {
   return (
     <View style={garro.container}>
-      <Text style ={garro.text}>Onde o café encontra a magia do cinema</Text>
+      <Text style ={garro.text}>Onde o café encontra a magia do cinema!</Text>
     </View>
   );
 }
@@ -20,7 +20,7 @@ const garro = StyleSheet.create({
   },
   text: {
     color: '#20B2AA',
-    fontSize: 15,
+    fontSize: 16,
   },
 
   button: {

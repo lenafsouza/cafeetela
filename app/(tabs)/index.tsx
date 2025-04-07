@@ -1,20 +1,41 @@
 import { Text, View, StyleSheet} from "react-native";
 import {Link} from 'expo-router';
 import {Image} from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
+import {useState} from 'react';
 
 import Button from '@/app/components/Button';
 import ImageViewer from '@/app/components/ImageViewer';
 
+
 const PlaceholderImage = require('@/assets/images/cinema1.png');
 
 export default function Index() {
+  const [selectedImage, setSelectedImage] = useState<string | undefined> (undefined);
+
+
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled){
+      setSelectedImage(result.assets[0].uri);
+    }else {
+      alert ("você não selecionou nenhuma imagem");
+    }
+  };
+
+
   return (
     <View style={garro.container}>
       <View style = {garro.imageContainer}>
-       <ImageViewer imgSource = {PlaceholderImage} />
+       <ImageViewer imgSource = {PlaceholderImage} selectedImage = {selectedImage} />
     </View>
     <View style= {garro.footerContainer}>
-      <Button theme = "primary" label = "Escolha uma foto"/>
+      <Button theme = "primary" label = "Escolha uma foto" onPress={pickImageAsync}/>
       <Button label = "Use esta foto" />
     </View>
     </View>
@@ -66,3 +87,7 @@ const garro = StyleSheet.create({
   },
 
 });
+
+
+
+

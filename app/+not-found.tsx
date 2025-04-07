@@ -23,7 +23,7 @@ const garro = StyleSheet.create({
     },
 
     button: {
-        fontSize: 15,
+        fontSize: 16,
         textDecorationLine: 'underline',
         color: '#20B2AA',
       },
