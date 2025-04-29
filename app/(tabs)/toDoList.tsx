@@ -6,7 +6,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import 'react-native-gesture-handler'; 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-export default function App() {
+export default function ToDoList() {
   const { tarefas, novaTarefa, setNovaTarefa, adicionarTarefa, removerTarefa } = useTarefas();
 
   return (

@@ -24,7 +24,7 @@ export default function Index() {
     if (!result.canceled){
       setSelectedImage(result.assets[0].uri);
     }else {
-      alert ("você não selecionou nenhuma imagem");
+      alert ("você não selecionou nenhuma imagem!");
     }
   };
 

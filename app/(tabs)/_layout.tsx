@@ -4,6 +4,7 @@ import { TextInput } from 'react-native-gesture-handler';
 
 
 
+
 export default function TabLayout() {
   return (
     <Tabs
@@ -43,6 +44,15 @@ export default function TabLayout() {
               title: 'Lista de Tarefas',
               tabBarIcon: ({color,focused})=> (
                 <Ionicons name = {focused? 'battery-dead': 'battery-dead'} color={color} size={24}/>
+              ),
+            }}
+            />
+            <Tabs.Screen
+            name='buscarFilme'
+            options={{
+              title: 'Consultar Filmes',
+              tabBarIcon: ({color, focused}) => (
+                <Ionicons name = {focused? 'clipboard-outline': 'clipboard-outline'} color = {color} size={24}/>
               ),
             }}
             />
