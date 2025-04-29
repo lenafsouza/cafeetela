@@ -99,15 +99,15 @@ const styles = StyleSheet.create({
   },
   textinput: {
     flex: 1,
-    borderWidth: 2,
-    borderColor: '#A1C6E8',
-    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#fff',
     padding: 10,
-    backgroundColor: '#fff',
+    borderRadius: 5,
     marginRight: 10,
-    fontSize: 16,
-    color: '#333',
+    color: '#FFFFE0',
+    fontWeight: 'bold',
   },
+  
   botao: {
     backgroundColor: '#20B2AA',
     padding: 12,
