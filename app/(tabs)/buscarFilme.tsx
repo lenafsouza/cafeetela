@@ -1,44 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { Text, TextInput, View, Alert, StyleSheet, TouchableOpacity, Keyboard, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Keyboard } from 'react-native';
+import { useBuscaFilme } from '../hooks/useBuscaFilme'; //importe o hook 
 import AntDesign from '@expo/vector-icons/AntDesign';
-
-type Filme = {
-  title: string;
-  release_date: string;
-  overview: string;
-  genre_ids: number[];
-};
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function App() {
-  const [filme, setFilme] = useState('');
-  const [resultados, setResultados] = useState<Filme[]>([]); 
+  const { filme, setFilme, resultados, buscarFilme, removerFilme } = useBuscaFilme(); //usando o hook 
 
-  const API_KEY = '42fac7050440e931ae0563fb02956040'; 
-  const BASE_URL = 'https://api.themoviedb.org/3';
-
-  async function buscarFilme() {
-    if (!filme) {
-      Alert.alert('Erro', 'Digite o nome do filme.');
-      return;
-    }
-
-    try {
-      const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${filme}&language=pt-BR`);
-      const dados = await response.json();
-
-      if (dados.results && dados.results.length > 0) {
-        const filmeEncontrado = dados.results[0]; 
-        setResultados(prev => [...prev, filmeEncontrado]); 
-        setFilme(''); 
-        Keyboard.dismiss();
-      } else {
-        Alert.alert('Filme não encontrado', 'Nenhum filme encontrado com esse nome.');
-      }
-    } catch (error) {
-      Alert.alert('Erro de conexão', 'Não foi possível buscar o filme. Tente novamente.');
-    }
-  }
+  const formatarData = (data: string) => {
+    const date = new Date(data);
+    return date.toLocaleDateString('pt-BR');
+  };
 
   return (
     <View style={styles.container}>
@@ -61,9 +33,15 @@ export default function App() {
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.result}>
+            <TouchableOpacity
+              onPress={() => removerFilme(item.title)}
+              style={styles.remover}
+            >
+              <Ionicons name="backspace-outline" size={24} color="black" />
+            </TouchableOpacity>
             <Text>🎬 Nome: {item.title}</Text>
             <Text>🎭 Gênero (ID): {item.genre_ids?.[0] ?? 'Indefinido'}</Text>
-            <Text>📅 Lançamento: {item.release_date ?? 'Data não disponível'}</Text>
+            <Text>📅 Lançamento: {item.release_date ? formatarData(item.release_date) : 'Data de lançamento não informada'}</Text>
             <Text>📝 Sinopse: {item.overview?.length > 0 ? item.overview : 'Sinopse indisponível'}</Text>
           </View>
         )}
@@ -107,7 +85,6 @@ const styles = StyleSheet.create({
     color: '#FFFFE0',
     fontWeight: 'bold',
   },
-  
   botao: {
     backgroundColor: '#20B2AA',
     padding: 12,
@@ -124,11 +101,17 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     width: '100%',
     padding: 15,
-    backgroundColor: '#A1C6E8',
+    backgroundColor: '#fff',
     borderRadius: 8,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+  },
+  remover: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    zIndex: 1,
   },
 });
