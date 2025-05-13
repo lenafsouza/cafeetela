@@ -66,8 +66,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#20B2AA',
     textAlign: 'center',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 4,
+    //textShadowOffset: { width: 1, height: 1 },
+    //textShadowRadius: 4,
   },
   inputContainer: {
     flexDirection: 'row',

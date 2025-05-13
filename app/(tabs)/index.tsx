@@ -1,17 +1,20 @@
-import { Text, View, StyleSheet} from "react-native";
+import {Text, View, StyleSheet} from "react-native";
 import {Link} from 'expo-router';
 import {Image} from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import {useState} from 'react';
 
 import Button from '@/app/components/Button';
-import ImageViewer from '@/app/components/ImageViewer';
+import ImageViewer from "@/app/components/ImageViewer";
+import IconButton from '@/app/components/IconButton';
+import CircleButton from '@/app/components/CircleButton';
 
 
 const PlaceholderImage = require('@/assets/images/cinema1.png');
 
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined> (undefined);
+  const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
 
 
   const pickImageAsync = async () => {
@@ -23,21 +26,44 @@ export default function Index() {
 
     if (!result.canceled){
       setSelectedImage(result.assets[0].uri);
+      setShowAppOptions(true);
     }else {
       alert ("você não selecionou nenhuma imagem!");
     }
   };
 
+  const onReset = () => {
+    setShowAppOptions (false);
+  };
+
+  const onAddSticker = () => {
+    //
+  };
+
+  const onSaveImageAsync = async () => {
+    //
+  };
 
   return (
     <View style={garro.container}>
       <View style = {garro.imageContainer}>
        <ImageViewer imgSource = {PlaceholderImage} selectedImage = {selectedImage} />
     </View>
+
+    {showAppOptions ? (
+      <View style = {garro.optionsContainer}>
+        <View style = {garro.optionsRow}>
+          <IconButton icon="refresh" label="Reinício" onPress={onReset} />
+          <CircleButton onPress={onAddSticker} />
+           <IconButton icon="save-alt" label="Salvar" onPress={onSaveImageAsync} />
+        </View>
+    </View>
+    ) : (
     <View style= {garro.footerContainer}>
       <Button theme = "primary" label = "Escolha uma foto" onPress={pickImageAsync}/>
-      <Button label = "Use esta foto" />
+      <Button label = "Use esta foto"  onPress={() => setShowAppOptions (true)}/>
     </View>
+    )}
     </View>
   );
 }  
@@ -86,6 +112,15 @@ const garro = StyleSheet.create({
     marginTop: 15,
   },
 
+  optionsContainer: {
+    position: 'absolute',
+    bottom: 80,
+  },
+
+  optionsRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
 });
 
 
