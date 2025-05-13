@@ -94,9 +94,9 @@ const garro = StyleSheet.create({
 
   imageContainer: {
     flex:1,
-    justifyContent: 'center',  
-    alignItems: 'center',     
-    textAlign: 'center',
+   //justifyContent: 'center',  
+    //alignItems: 'center',     
+   // textAlign: 'center',
   },
 
   image:{ 
@@ -109,7 +109,7 @@ const garro = StyleSheet.create({
   footerContainer: {
     flex: 1/3,
     alignItems: 'center',
-    marginTop: 15,
+   // marginTop: 15,
   },
 
   optionsContainer: {
