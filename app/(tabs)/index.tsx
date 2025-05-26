@@ -86,7 +86,7 @@ const garro = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor:'#ADD8E6',
-    justifyContent: 'center',  
+    //justifyContent: 'center',  
     alignItems: 'center',
         
 
