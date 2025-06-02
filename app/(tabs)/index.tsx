@@ -11,7 +11,7 @@ import CircleButton from '@/app/components/CircleButton';
 import EmojiPicker from '@/app/components/EmojiPicker';
 import EmojiList from '@/app/components/EmojiList';
 import EmojiSticker from '@/app/components/EmojiSticker';
-
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const PlaceholderImage = require('@/assets/images/cinema1.png');
 
@@ -55,7 +55,7 @@ export default function Index() {
   };
 
   return (
-    <View style={garro.container}>
+    <GestureHandlerRootView style={garro.container}>
       <View style = {garro.imageContainer}>
        <ImageViewer imgSource = {PlaceholderImage} selectedImage = {selectedImage} />
        {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />} 
@@ -78,7 +78,7 @@ export default function Index() {
     <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
       <EmojiList onSelect={setPickedEmoji} onCloseModal = {onModalClose} />
     </EmojiPicker>
-    </View>
+    </GestureHandlerRootView>
   );
 }  
 

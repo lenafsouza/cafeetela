@@ -16,12 +16,17 @@ export default function EmojiList({onSelect, onCloseModal}: Props) {
       //  require("../assets/images/emoji5.png"),
      //   require("../assets/images/emoji6.png"),
 
-     require("../../assets/images/emoji1.png"),
-     require("../../assets/images/emoji2.png"),
-     require("../../assets/images/emoji3.png"),
-     require("../../assets/images/emoji4.png"),
-     require("../../assets/images/emoji5.png"),
-     require("../../assets/images/emoji6.png"),
+     require("../../assets/images/mascara.png"),
+     require("../../assets/images/ticketcine.png"),
+     require("../../assets/images/claquete.png"),
+     require("../../assets/images/poster.png"),
+     require("../../assets/images/cartazfilme.png"),
+    // require("../../assets/images/cinemaicon.png"),
+     require("../../assets/images/pipoca.png"),
+     require("../../assets/images/cafe.png"),
+     require("../../assets/images/cafelocal.png"),
+     require("../../assets/images/graos.png"),
+    // require("../../assets/images/cafeicon.png"),
 
     ]);
 
