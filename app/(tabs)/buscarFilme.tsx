@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Keyboard } from 'react-native';
-import { useBuscaFilme } from '../hooks/useBuscaFilme'; //importe o hook
+import  useBuscaFilme  from '../hooks/useBuscaFilme'; //importe o hook//tirei as chaves
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { useTarefas } from '../hooks/useTarefas';
+import  useTarefas  from '../hooks/useTarefas';//TIREI AS CHAVES {}
 import { TextInput } from 'react-native-gesture-handler';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import 'react-native-gesture-handler'; 
@@ -52,8 +52,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
     color: '#20B2AA',
-    textShadowColor: '#A1C6E8',
-    textShadowRadius: 6,
+    //textShadowColor: '#A1C6E8',
+    //textShadowRadius: 6,
+    shadowColor: '#A1C6E8',
+    shadowRadius: 6,
   },
   inputContainer: { flexDirection: 'row', marginBottom: 10 },
   input: {
@@ -73,10 +75,11 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 5,
     borderRadius: 5,
-    shadowColor: '#000',
+   shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 2,
+    //boxShadow: '0px 2px 3px rgba(0,0,0,0.1)', - substitui shadowColor + shadowRadius + elevation
   },
   tarefaTexto: { fontSize: 16, color: '#20B2AA' },
   remover: { fontSize: 18 },
