@@ -12,9 +12,11 @@
       "jsEngine": "jsc",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "O app precisa acessar sua galeria para selecionar e salvar imagens."
+      },
+      "runtimeVersion": {
+        "policy": "appVersion"
       }
     },
-
     "android": {
       "package": "com.anonymous.corinthians",
       "adaptiveIcon": {
@@ -25,10 +27,13 @@
       "permissions": [
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
         "CAMERA"
-      ]
+      ],
+      "runtimeVersion": "1.0.0"
     },
-
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -49,6 +54,15 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e366ce6b-a0c6-4c83-84a6-e636842224ad"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/e366ce6b-a0c6-4c83-84a6-e636842224ad"
     }
   }
 }
