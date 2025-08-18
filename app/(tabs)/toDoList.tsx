@@ -1,25 +1,31 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import  useTarefas  from '../hooks/useTarefas';//TIREI AS CHAVES {}
+import useTarefas from '../hooks/useTarefas'; // TIREI AS CHAVES {}
 import { TextInput } from 'react-native-gesture-handler';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import 'react-native-gesture-handler'; 
+import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function ToDoList() {
   const { tarefas, novaTarefa, setNovaTarefa, adicionarTarefa, removerTarefa } = useTarefas();
+  const [isSearching, setIsSearching] = React.useState(false);
+
+  const handleTextChange = (text: string) => {
+    setNovaTarefa(text);
+    setIsSearching(text.length > 0); // Detecta se o campo de texto está vazio ou não
+  };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}> 
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
         <Text style={styles.titulo}>✨ Lista de Tarefas ✨</Text>
 
         <View style={styles.inputContainer}>
           <TextInput
-            style={styles.input}
+            style={[styles.input, isSearching && styles.inputSearching]} // Modifica o estilo quando começa a digitar
             placeholder="Adicione uma tarefa..."
             value={novaTarefa}
-            onChangeText={setNovaTarefa}
+            onChangeText={handleTextChange}
           />
 
           <TouchableOpacity onPress={adicionarTarefa}>
@@ -40,48 +46,65 @@ export default function ToDoList() {
           )}
         />
       </View>
-    </GestureHandlerRootView> 
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#ADD8E6' },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#ADD8E6', // Cor de fundo suave
+  },
   titulo: {
     fontSize: 26,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
     color: '#20B2AA',
-    //textShadowColor: '#A1C6E8',
-    //textShadowRadius: 6,
     shadowColor: '#A1C6E8',
     shadowRadius: 6,
   },
-  inputContainer: { flexDirection: 'row', marginBottom: 10 },
+  inputContainer: {
+    flexDirection: 'row',
+    marginBottom: 10,
+    alignItems: 'center',
+  },
   input: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#fff',
-    padding: 10,
-    borderRadius: 5,
+    borderWidth: 1.5,            // Largura da borda
+    borderColor: '#20B2AA',      // Cor da borda
+    padding: 15,                 // Tamanho fixo do espaço interno
+    fontSize: 16,                // Tamanho da fonte
+    borderRadius: 10,            // Bordas arredondadas
     marginRight: 10,
-    color: '#FFFFE0',
-    fontWeight: 'bold',
+    backgroundColor: '#ffffff90', // Fundo suave com transparência
+    color: '#20B2AA',            // Cor do texto
+    fontWeight: 'bold',          // Peso da fonte
+  },
+  inputSearching: {
+    backgroundColor: '#ffffff60', // Altere o fundo quando estiver pesquisando (mais escuro)
+    borderColor: '#20B2AA',       // Mudando a borda de acordo com a pesquisa
   },
   tarefaContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#fffafa',
+    backgroundColor: '#fffafa',    // Fundo suave para as tarefas
     padding: 15,
     marginBottom: 5,
-    borderRadius: 5,
-   shadowColor: '#000',
+    borderRadius: 10,              // Bordas arredondadas para tarefas
+    borderWidth: 1.5,              // Borda suave
+    borderColor: '#20B2AA',        // Cor da borda
+    shadowColor: '#000',           // Sombra leve
     shadowOpacity: 0.1,
     shadowRadius: 3,
-    elevation: 2,
-    //boxShadow: '0px 2px 3px rgba(0,0,0,0.1)', - substitui shadowColor + shadowRadius + elevation
+    elevation: 2,                  // Sombra no Android
   },
-  tarefaTexto: { fontSize: 16, color: '#20B2AA' },
-  remover: { fontSize: 18 },
+  tarefaTexto: {
+    fontSize: 16,
+    color: '#20B2AA',              // Cor do texto da tarefa
+  },
+  remover: {
+    fontSize: 18,
+  },
 });
-

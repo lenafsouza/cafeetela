@@ -1,11 +1,18 @@
+import React, { useState } from 'react'; // Adicionando React e useState
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Keyboard } from 'react-native';
-import  useBuscaFilme  from '../hooks/useBuscaFilme'; //importe o hook//tirei as chaves
+import useBuscaFilme from '../hooks/useBuscaFilme'; // TIREI AS CHAVES {}
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function App() {
-  const { filme, setFilme, resultados, buscarFilme, removerFilme } = useBuscaFilme(); //usando o hook 
+  const { filme, setFilme, resultados, buscarFilme, removerFilme } = useBuscaFilme(); // Usando o hook
+  const [isSearching, setIsSearching] = useState(false); // Controle de quando está digitando
+
+  const handleTextChange = (text: string) => {
+    setFilme(text);
+    setIsSearching(text.length > 0); // Detecta se o texto está vazio ou não
+  };
 
   const formatarData = (data: string) => {
     const date = new Date(data);
@@ -18,10 +25,10 @@ export default function App() {
 
       <View style={styles.inputContainer}>
         <TextInput
-          style={styles.textinput}
+          style={[styles.textinput, isSearching && styles.inputSearching]} // Estilo quando estiver pesquisando
           placeholder="Digite o nome do filme..."
           value={filme}
-          onChangeText={setFilme}
+          onChangeText={handleTextChange}
         />
         <TouchableOpacity onPress={buscarFilme} style={styles.botao}>
           <AntDesign name="staro" size={24} color="#fff" />
@@ -66,8 +73,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#20B2AA',
     textAlign: 'center',
-    //textShadowOffset: { width: 1, height: 1 },
-    //textShadowRadius: 4,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -77,13 +82,19 @@ const styles = StyleSheet.create({
   },
   textinput: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#fff',
-    padding: 10,
-    borderRadius: 5,
+    borderWidth: 1.5,           // Largura da borda
+    borderColor: '#20B2AA',     // Cor da borda
+    padding: 15,                // Tamanho fixo do espaço interno
+    fontSize: 16,               // Tamanho da fonte
+    borderRadius: 10,           // Bordas arredondadas
     marginRight: 10,
-    color: '#FFFFE0',
-    fontWeight: 'bold',
+    backgroundColor: '#ffffff90', // Fundo translúcido leve
+    color: '#20B2AA',           // Cor do texto
+    fontWeight: 'bold',         // Peso da fonte
+  },
+  inputSearching: {
+    backgroundColor: '#ffffff60', // Cor de fundo quando estiver em "pesquisa" (mais escuro)
+    borderColor: '#20B2AA',       // Borda visível
   },
   botao: {
     backgroundColor: '#20B2AA',
@@ -101,8 +112,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     width: '100%',
     padding: 15,
-    backgroundColor: '#fff',
-    borderRadius: 8,
+    backgroundColor: '#ffffff', // Fundo branco para os resultados
+    borderRadius: 10,          // Bordas arredondadas
+    borderWidth: 1.5,          // Borda de 1.5px
+    borderColor: '#20B2AA',    // Cor da borda
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
