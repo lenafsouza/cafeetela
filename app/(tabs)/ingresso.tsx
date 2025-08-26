@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: "white",  
   },
   assentoSelecionado: {
     backgroundColor: "#20B2AA",
@@ -447,3 +447,4 @@ const styles = StyleSheet.create({
   assentoTexto: { color: "#20B2AA", fontWeight: "bold" },
   assentoTextoSelecionado: { color: "#fff", fontWeight: "bold" },
 });
+ 
