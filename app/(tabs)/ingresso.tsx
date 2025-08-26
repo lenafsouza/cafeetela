@@ -25,6 +25,8 @@ const generosTMDB: Record<string, number> = {
 const linhasAssentos = ["A", "B", "C", "D", "E", "F"];
 const colunasAssentos = 10;
 
+const horariosDisponiveis = ["14:00", "16:00", "18:00", "20:00"];
+
 export default function Ingresso() {
   const [generoFilme, setGeneroFilme] = useState<string | null>(null);
   const [filmes, setFilmes] = useState<any[]>([]);
@@ -44,7 +46,10 @@ export default function Ingresso() {
 
       const response = await fetch(url);
       const data = await response.json();
-      setFilmes((data.results || []).slice(0, 5).filter((filme: any) => filme.poster_path && filme.title));
+
+      setFilmes(
+        (data.results || []).slice(0, 5).filter((filme: any) => filme.poster_path && filme.title)
+      );
     } catch (error) {
       Alert.alert("Erro", "Não foi possível carregar os filmes.");
     } finally {
@@ -54,21 +59,23 @@ export default function Ingresso() {
 
   const toggleAssento = (assento: string) => {
     setAssentosSelecionados((prev) =>
-      prev.includes(assento) ? prev.filter((a) => a !== assento) : [...prev, assento]
+      prev.includes(assento)
+        ? prev.filter((a) => a !== assento)
+        : [...prev, assento]
     );
   };
 
-  const limparAssentos = () => {
+  const resetarTudo = () => {
+    setFilmeSelecionado(null);
     setAssentosSelecionados([]);
+    setGeneroFilme(null);
+    setFilmes([]);
+    setHorarioSelecionado(null);
   };
 
   const resetarSelecaoComDelay = () => {
     setTimeout(() => {
-      setFilmeSelecionado(null);
-      setAssentosSelecionados([]);
-      setGeneroFilme(null);
-      setFilmes([]);
-      setHorarioSelecionado(null);
+      resetarTudo();
     }, 2000);
   };
 
@@ -87,9 +94,8 @@ export default function Ingresso() {
     }
 
     const assentosTexto = assentosSelecionados.join(", ");
-    const isWeb = typeof window !== "undefined";
 
-    if (isWeb) {
+    if (Platform.OS === "web") {
       const html = `
         <html>
           <head>
@@ -125,7 +131,6 @@ export default function Ingresso() {
         link.href = url;
         link.download = "ingresso.html";
         link.click();
-       // window.open(url, "_blank");
         resetarSelecaoComDelay();
       } catch (error) {
         Alert.alert("Erro", "Não foi possível salvar o ingresso.");
@@ -133,18 +138,17 @@ export default function Ingresso() {
     } else {
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert(
-          "Permissão necessária",
-          "Habilite o acesso à galeria nas configurações do seu aparelho para salvar o ingresso."
-        );
+        Alert.alert("Permissão necessária", "Habilite o acesso à galeria para salvar o ingresso.");
         return;
       }
+
       try {
         const uri = await captureRef(ingressoRef, { format: "png", quality: 1 });
         await MediaLibrary.createAssetAsync(uri);
         Alert.alert("Sucesso", "Ingresso salvo na galeria!");
         resetarSelecaoComDelay();
       } catch (error) {
+        console.error(error);
         Alert.alert("Erro", "Não foi possível salvar o ingresso.");
       }
     }
@@ -160,13 +164,22 @@ export default function Ingresso() {
           {Object.keys(generosTMDB).map((genero) => (
             <TouchableOpacity
               key={genero}
-              style={[styles.botaoFiltro, generoFilme === genero && styles.botaoFiltroAtivo]}
+              style={[
+                styles.botaoFiltro,
+                generoFilme === genero && styles.botaoFiltroAtivo,
+              ]}
               onPress={() => {
                 setGeneroFilme(genero);
                 buscarFilmesPorGenero(genero);
               }}
             >
-              <Text style={generoFilme === genero ? styles.textoFiltroAtivo : styles.textoFiltro}>
+              <Text
+                style={
+                  generoFilme === genero
+                    ? styles.textoFiltroAtivo
+                    : styles.textoFiltro
+                }
+              >
                 {genero}
               </Text>
             </TouchableOpacity>
@@ -180,7 +193,7 @@ export default function Ingresso() {
             data={filmes}
             horizontal
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(_, index) => index.toString()}
+            keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <View style={styles.cardFilme}>
                 <Image
@@ -190,9 +203,15 @@ export default function Ingresso() {
                 />
                 <Text style={styles.nomeFilme}>{item.title}</Text>
                 <Text style={styles.dataFilme}>
-                  Lançamento: {item.release_date ? new Date(item.release_date).toLocaleDateString("pt-BR") : "Indefinido"}
+                  Lançamento: {item.release_date
+                    ? new Date(item.release_date).toLocaleDateString("pt-BR")
+                    : "Indefinido"}
                 </Text>
-                <TouchableOpacity style={styles.botaoIngresso} onPress={() => setFilmeSelecionado(item)}>
+
+                <TouchableOpacity
+                  style={styles.botaoSalvar}
+                  onPress={() => setFilmeSelecionado(item)}
+                >
                   <Text style={styles.textoBotao}>Selecionar</Text>
                 </TouchableOpacity>
               </View>
@@ -213,7 +232,10 @@ export default function Ingresso() {
                     return (
                       <TouchableOpacity
                         key={assento}
-                        style={[styles.assento, selecionado && styles.assentoSelecionado]}
+                        style={[
+                          styles.assento,
+                          selecionado && styles.assentoSelecionado,
+                        ]}
                         onPress={() => toggleAssento(assento)}
                       >
                         <Text style={selecionado ? styles.assentoTextoSelecionado : styles.assentoTexto}>
@@ -224,24 +246,35 @@ export default function Ingresso() {
                   })}
                 </View>
               ))}
+
+              {/* Botão Limpar Assentos */}
+              <TouchableOpacity
+                style={[styles.botaoSalvar, { backgroundColor: "#f39c12", alignSelf: "center", marginTop: 15 }]}
+                onPress={() => setAssentosSelecionados([])}
+              >
+                <Text style={styles.textoBotao}>Limpar Assentos</Text>
+              </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.botaoLimpar} onPress={limparAssentos}>
-            <Text style={styles.textoBotao}>Limpar Assentos</Text>
-            </TouchableOpacity>
-
-
-
-
+            {/* Seletor de Horário */}
             <Text style={[styles.subtitulo, { marginTop: 20 }]}>Escolha o horário da sessão:</Text>
-            <View style={styles.horariosContainer}>
-              {["14:00", "17:00", "20:00"].map((horario) => (
+            <View style={styles.filtrosContainer}>
+              {horariosDisponiveis.map((horario) => (
                 <TouchableOpacity
                   key={horario}
-                  style={[styles.horarioBotao, horarioSelecionado === horario && styles.horarioBotaoSelecionado]}
+                  style={[
+                    styles.botaoFiltro,
+                    horarioSelecionado === horario && styles.botaoFiltroAtivo,
+                  ]}
                   onPress={() => setHorarioSelecionado(horario)}
                 >
-                  <Text style={horarioSelecionado === horario ? styles.horarioTextoSelecionado : styles.horarioTexto}>
+                  <Text
+                    style={
+                      horarioSelecionado === horario
+                        ? styles.textoFiltroAtivo
+                        : styles.textoFiltro
+                    }
+                  >
                     {horario}
                   </Text>
                 </TouchableOpacity>
@@ -252,38 +285,42 @@ export default function Ingresso() {
               <View style={styles.header}>
                 <Text style={styles.cinemaNome}>Café e Tela</Text>
               </View>
+
               <Image
                 source={{ uri: `https://image.tmdb.org/t/p/w500${filmeSelecionado.poster_path}` }}
                 style={styles.posterIngresso}
               />
+
               <View style={styles.infoContainer}>
                 <Text style={styles.nomeIngresso}>{filmeSelecionado.title}</Text>
-                <Text style={styles.dataIngresso}>📅 {new Date().toLocaleDateString("pt-BR")}</Text>
+                <Text style={styles.dataIngresso}>
+                  📅 {new Date().toLocaleDateString("pt-BR")}
+                </Text>
                 <Text style={styles.detalhes}>⏰ Sessão: {horarioSelecionado}</Text>
                 <Text style={styles.detalhes}>🎟️ Assento(s): {assentosSelecionados.join(", ")}</Text>
               </View>
+
               <View style={styles.tracejado}>
                 <Text style={styles.tracos}>-------------------------------</Text>
               </View>
+
               <View style={styles.footer}>
                 <Text style={styles.footerTexto}>🍿 Bom Filme!</Text>
               </View>
             </ViewShot>
 
-            <View style={styles.botoesLinha}>
-  <TouchableOpacity style={styles.botaoSalvar} onPress={gerarIngresso}>
-    <Text style={styles.textoBotao}>Salvar Ingresso 💾</Text>
-  </TouchableOpacity>
+            <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 20, gap: 15 }}>
+              <TouchableOpacity 
+                style={[styles.botaoSalvar, { backgroundColor: "#20B2AA" }]} 
+                onPress={resetarTudo}
+              >
+                <Text style={styles.textoBotao}>Editar Ingresso ✏️</Text>
+              </TouchableOpacity>
 
-  <TouchableOpacity style={styles.botaoSalvar} onPress={() => {
-    setFilmeSelecionado(null);
-    setAssentosSelecionados([]);
-    setHorarioSelecionado(null);
-  }}>
-    <Text style={styles.textoBotao}>Editar Ingresso ✏️</Text>
-  </TouchableOpacity>
-</View>
-
+              <TouchableOpacity style={styles.botaoSalvar} onPress={gerarIngresso}>
+                <Text style={styles.textoBotao}>Salvar Ingresso 💾</Text>
+              </TouchableOpacity>
+            </View>
           </>
         )}
       </View>
@@ -293,58 +330,120 @@ export default function Ingresso() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, alignItems: "center" },
-  titulo: { fontSize: 28, fontWeight: "bold", color: "#20B2AA", marginBottom: 20 },
-  subtitulo: { fontSize: 18, fontWeight: "600", marginTop: 15, marginBottom: 10, color: "#20B2AA" },
-  filtrosContainer: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center" },
-  botaoFiltro: { backgroundColor: "#fff", borderColor: "#20B2AA", borderWidth: 1, borderRadius: 20, paddingVertical: 8, paddingHorizontal: 15, margin: 5 },
+  titulo: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#20B2AA",
+    marginBottom: 20,
+  },
+  subtitulo: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginTop: 15,
+    marginBottom: 10,
+    color: "#20B2AA",
+  },
+  filtrosContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+  },
+  botaoFiltro: {
+    backgroundColor: "#fff",
+    borderColor: "#20B2AA",
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    margin: 5,
+  },
   botaoFiltroAtivo: { backgroundColor: "#20B2AA" },
   textoFiltro: { color: "#20B2AA" },
   textoFiltroAtivo: { color: "#fff", fontWeight: "bold" },
-  cardFilme: { margin: 10, padding: 10, backgroundColor: "#fff", borderRadius: 12, width: 240, alignItems: "center" },
+  cardFilme: {
+    margin: 10,
+    padding: 10,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    width: 240,
+    alignItems: "center",
+  },
   poster: { width: 200, height: 300, borderRadius: 10 },
   nomeFilme: { fontSize: 16, fontWeight: "bold", marginTop: 10, color: "#333" },
   dataFilme: { fontSize: 14, color: "#666", marginVertical: 5 },
-  botaoIngresso: { backgroundColor: "#20B2AA", paddingVertical: 10, paddingHorizontal: 20, borderRadius: 8, marginTop: 10 },
-  textoBotao: { color: "#fff", fontSize: 16, fontWeight: "bold" },
-  ingresso: { marginTop: 30, backgroundColor: "#fff", borderRadius: 20, padding: 15, alignItems: "center", width: 320, shadowColor: "#000", shadowOpacity: 0.2, shadowRadius: 6, elevation: 5, overflow: "hidden", borderWidth: 1, borderColor: "#ddd" },
-  header: { width: "100%", backgroundColor: "#20B2AA", padding: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20, alignItems: "center" },
-  cinemaNome: { color: "#fff", fontWeight: "bold", fontSize: 18 },
-  posterIngresso: { width: 250, height: 350, borderRadius: 10, marginTop: 15 },
-  infoContainer: { marginTop: 10, alignItems: "center" },
-  nomeIngresso: { fontSize: 18, fontWeight: "bold", color: "#20B2AA", textAlign: "center" },
-  dataIngresso: { fontSize: 16, color: "#444", marginVertical: 5 },
-  detalhes: { fontSize: 14, color: "#555" },
-  tracejado: { marginTop: 15 },
-  tracos: { color: "#aaa", letterSpacing: 2 },
-  footer: { width: "100%", backgroundColor: "#20B2AA", padding: 10, borderBottomLeftRadius: 20, borderBottomRightRadius: 20, alignItems: "center", marginTop: 10 },
-  footerTexto: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  botaoSalvar: { backgroundColor: "#20B2AA", padding: 12, borderRadius: 8, marginTop: 20 },
-  assentosContainer: { marginTop: 10, width: 320 },
-  linhaAssentos: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
-  letraLinha: { width: 20, fontWeight: "bold", color: "#20B2AA" },
-  assento: { width: 24, height: 24, borderRadius: 4, borderWidth: 1, borderColor: "#20B2AA", marginHorizontal: 3, justifyContent: "center", alignItems: "center" },
-  assentoSelecionado: { backgroundColor: "#20B2AA" },
-  assentoTexto: { color: "#20B2AA", fontWeight: "bold", fontSize: 12 },
-  assentoTextoSelecionado: { color: "#fff", fontWeight: "bold", fontSize: 12 },
-  horariosContainer: { flexDirection: "row", justifyContent: "center", marginVertical: 10 },
-  horarioBotao: { borderWidth: 1, borderColor: "#20B2AA", borderRadius: 20, paddingVertical: 8, paddingHorizontal: 15, marginHorizontal: 5, backgroundColor: "#fff" },
-  horarioBotaoSelecionado: { backgroundColor: "#20B2AA" },
-  horarioTexto: { color: "#20B2AA", fontWeight: "bold" },
-  horarioTextoSelecionado: { color: "#fff", fontWeight: "bold" },
-  botaoLimpar: {
-  backgroundColor: "#20B2AA",
-  paddingVertical: 10,
-  paddingHorizontal: 20,
-  borderRadius: 8,
-  marginTop: 15,
-},
-
-botoesLinha: {
-  flexDirection: "row",
-  justifyContent: "space-between",
-  width: 320,
-  gap: 10,
-},
-
-
+  botaoSalvar: {
+    backgroundColor: "#20B2AA",
+    padding: 12,
+    borderRadius: 8,
+  },
+  textoBotao: { color: "#fff", fontSize: 16, fontWeight: "bold", textAlign: "center" },
+  ingresso: {
+    marginTop: 30,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 15,
+    alignItems: "center",
+    width: 320,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
+    overflow: "hidden",
+  },
+  header: {
+    backgroundColor: "#20B2AA",
+    width: "100%",
+    borderRadius: 20,
+    paddingVertical: 10,
+    alignItems: "center",
+  },
+  cinemaNome: { fontSize: 22, color: "#fff", fontWeight: "bold" },
+  posterIngresso: {
+    width: 250,
+    height: 350,
+    borderRadius: 12,
+    marginVertical: 15,
+  },
+  infoContainer: { alignItems: "center" },
+  nomeIngresso: { fontSize: 22, fontWeight: "bold", color: "#20B2AA" },
+  dataIngresso: { fontSize: 16, marginTop: 5 },
+  detalhes: { fontSize: 16, marginTop: 5 },
+  tracejado: { marginVertical: 10 },
+  tracos: { color: "#aaa" },
+  footer: {
+    backgroundColor: "#20B2AA",
+    width: "100%",
+    borderRadius: 20,
+    paddingVertical: 10,
+    alignItems: "center",
+  },
+  footerTexto: { fontSize: 18, color: "#fff", fontWeight: "bold" },
+  assentosContainer: { marginTop: 10 },
+  linhaAssentos: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  letraLinha: {
+    fontWeight: "bold",
+    fontSize: 16,
+    width: 20,
+    color: "#20B2AA",
+  },
+  assento: {
+    width: 30,
+    height: 30,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "#20B2AA",
+    marginHorizontal: 3,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+  assentoSelecionado: {
+    backgroundColor: "#20B2AA",
+  },
+  assentoTexto: { color: "#20B2AA", fontWeight: "bold" },
+  assentoTextoSelecionado: { color: "#fff", fontWeight: "bold" },
 });
