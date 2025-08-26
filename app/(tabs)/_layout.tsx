@@ -56,7 +56,17 @@ export default function TabLayout() {
               ),
             }}
             />
+             <Tabs.Screen
+            name='ingresso'
+            options={{
+              title: 'Programação',
+              tabBarIcon: ({color, focused}) => (
+                <Ionicons name = {focused? 'ticket-outline': 'ticket-outline'} color = {color} size={24}/>
+              ),
+            }}
+            />
           </Tabs>
+          
   );
 }
 
